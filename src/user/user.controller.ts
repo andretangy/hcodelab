@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { Prisma, User as UserModel } from '@prisma/client';
+import { Public } from 'src/auth/public.decorator';
+import { CreateUserDTO } from './dto/createUser.dto';
+import { EditUserDTO } from './dto/editUser.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -19,20 +22,19 @@ export class UserController {
     }
 
     @Post()
-    async createUser(@Body() userData: Prisma.UserCreateInput): Promise<UserModel> {
+    //CreateUserDTO or Prisma.UserCreateInput
+    async createUser(@Body() userData: CreateUserDTO): Promise<UserModel> {
         return this.userService.creteUser(userData);
     }
 
     @Put(':id')
-    async updateUser() {
-        return 'Executando via put, alteração de um usuário';
+    async updateUser(@Body() userData: EditUserDTO, @Param('id') userId: number): Promise<UserModel> {
+        userData.userId = userId;
+        return this.userService.updateUser(userData);
     }
 
     @Delete(':id')
-    async deleteUser() {
-        return 'Executando dia delete, excluindo um usuário';
+    async deleteUser(@Param('id') userId: number) {
+        return this.userService.deleteUser(userId);
     }
-
-    
-
 }
